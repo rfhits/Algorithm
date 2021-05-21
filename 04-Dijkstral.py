@@ -100,3 +100,45 @@ for key in pre_Dict.keys():
     print(key, ':', pre_Dict[key])
 path = get_path(pre_Dict, 'u8')
 print(path)
+
+# --堆优化------------------
+# https://www.pythonheidong.com/blog/article/635789/e94e32315cb68fee52cb/
+# https://blog.csdn.net/a529975125/article/details/83315727
+
+from heapq import *
+ 
+n, m = map(int, input().split())
+idx = 0
+h = [-1]*(n+1)
+e, ne, w = [0]*(2*m+1), [0]*(2*m+1), [0]*(2*m+1)
+st, dist = [False]*(n+1), [float('inf')]*(n+1)
+ 
+def add(a, b, wei):
+    global idx
+    e[idx], w[idx] = b, wei
+    h[a], ne[idx] = idx, h[a]
+    idx += 1
+ 
+def dijkstra():
+    heap = []
+    heappush(heap, [0, 1])
+    dist[1] = 0
+    while heap:
+        d, cur_idx = heappop(heap)
+        if st[cur_idx]: continue
+        st[cur_idx] = True
+        i = h[cur_idx]
+        while i != -1:
+            wei = w[i]
+            t = e[i]
+            if dist[t] > dist[cur_idx] + wei:
+                dist[t] = dist[cur_idx] + wei
+                heappush(heap, [dist[t], t])
+            i = ne[i]
+        
+for _ in range(m):
+    a, b, wei = map(int, input().split())
+    add(a, b, wei)
+ 
+dijkstra()
+print(-1) if dist[n] == float('inf') else print(dist[n])
